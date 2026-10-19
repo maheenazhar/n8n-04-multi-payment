@@ -1,0 +1,337 @@
+{
+  "name": "Multi-Payment Method Dispatcher & Consolidation",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1bJGgrX-MxSg_zUGOesikIntbMsDrIp1hJ-FEkqgw2No",
+          "mode": "list",
+          "cachedResultName": "Multi-Payment",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bJGgrX-MxSg_zUGOesikIntbMsDrIp1hJ-FEkqgw2No/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bJGgrX-MxSg_zUGOesikIntbMsDrIp1hJ-FEkqgw2No/edit#gid=0"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -384,
+        0
+      ],
+      "id": "54b88450-2cfc-43f0-b862-0c267ed0b906",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "hiGaOdx0yJVdYcZ2",
+          "name": "Google Sheets Trigger account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.payment }}",
+                    "rightValue": "Card",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "c2d2ab75-7d67-455c-882a-9ebf2a3ad23e"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Card"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "914f2a02-3825-4c7a-a47b-1f1b60dc7ec4",
+                    "leftValue": "={{ $json.payment }}",
+                    "rightValue": "CoD",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "CoD"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "b3c476dc-4d67-4b32-9d04-8346e0635a4d",
+                    "leftValue": "={{ $json.payment }}",
+                    "rightValue": "Volite",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Volite"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -144,
+        -16
+      ],
+      "id": "3c79767e-af3f-41ac-8992-0ade73ff9887",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "=Payment Info: {{ $json.payment }}",
+        "emailType": "text",
+        "message": "Payment Done",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        80,
+        -128
+      ],
+      "id": "9bd99ecd-0a06-4076-a0c4-7dada96ca476",
+      "name": "Send a message",
+      "webhookId": "6265adb8-af62-4615-9ba8-3afd2ff8a8b8",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "D8aA06uBVb5vR05d",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Google Sheets Trigger').item.json.Email }}",
+        "subject": "Payment Info",
+        "emailType": "text",
+        "message": "Payment Done",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        80,
+        0
+      ],
+      "id": "08580b1f-0aca-4f45-8d31-a8efb25941f5",
+      "name": "Send a message1",
+      "webhookId": "5dbc7fea-ef32-4ab5-9dd4-7f56b4bf36ab",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "D8aA06uBVb5vR05d",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Google Sheets Trigger').item.json.Email }}",
+        "subject": "Payment Info",
+        "emailType": "text",
+        "message": "Payment Done",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        80,
+        144
+      ],
+      "id": "5a587e42-5292-4024-8e9c-734cd2f4012d",
+      "name": "Send a message2",
+      "webhookId": "f68cc06e-f4eb-4b83-a435-0e03cbd2fddd",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "D8aA06uBVb5vR05d",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        448,
+        -64
+      ],
+      "id": "d171fab5-e413-4289-b560-e1d51348cbd3",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Google Sheets Trigger').item.json.Email }}",
+        "subject": "={{ $('Google Sheets Trigger').item.json['order id'] }}",
+        "emailType": "text",
+        "message": "=Hey! {{ $('Google Sheets Trigger').item.json.Name }}, Your Order is confirmed!!",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        672,
+        -64
+      ],
+      "id": "81d85197-8de3-4447-a061-1028c783925b",
+      "name": "Send a message3",
+      "webhookId": "e4d636a8-1c52-42ef-87fe-809b9c7f90cc",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "D8aA06uBVb5vR05d",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Send a message2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Send a message3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "88464d73-baa2-4350-a585-aed16cf8a732",
+  "id": "VjFNiMxp7Yp2YoUJ",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {}
+}
